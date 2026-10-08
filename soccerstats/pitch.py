@@ -115,15 +115,11 @@ class Calibration:
     @classmethod
     def from_json(cls, path: str | Path) -> "Calibration":
         """Carga un fichero como `config/calibracion_ejemplo.json`."""
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
-        p = data.get("campo", {})
-        if p.get("tipo") == "futbol7":
-            pitch = PitchSpec.futbol7()
-        else:
-            pitch = PitchSpec()
-        overrides = {k: v for k, v in p.items() if k in PitchSpec.__dataclass_fields__}
-        if overrides:
-            pitch = PitchSpec(**{**pitch.__dict__, **overrides})
+        return cls.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Calibration":
+        pitch = pitch_from_config(data.get("campo", {}))
         refs = pitch.keypoints()
         names, img, world = [], [], []
         for name, xy in data["puntos"].items():
@@ -175,6 +171,13 @@ class Calibration:
             cv2.putText(out, name, (int(u) + 8, int(v) - 8), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, (0, 0, 255), 1, cv2.LINE_AA)
         return out
+
+
+def pitch_from_config(campo: dict) -> PitchSpec:
+    """Construye las medidas del campo a partir del bloque "campo" de la calibración."""
+    pitch = PitchSpec.futbol7() if campo.get("tipo") == "futbol7" else PitchSpec()
+    overrides = {k: v for k, v in campo.items() if k in PitchSpec.__dataclass_fields__}
+    return PitchSpec(**{**pitch.__dict__, **overrides}) if overrides else pitch
 
 
 def _densify(poly: np.ndarray, step: float) -> np.ndarray:

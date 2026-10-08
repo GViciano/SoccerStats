@@ -24,6 +24,7 @@ vídeo ──► YOLO + tracker ──► equipo por color ──► homografía
 |---|---|
 | `soccerstats/detection.py` | Envoltorio de YOLO con tracking. Admite un modelo afinado para fútbol o uno genérico COCO. |
 | `soccerstats/teams.py` | Color de camiseta (ignorando el césped), agrupación en 2 equipos, votación estable por ID y asignación de porteros. |
+| `soccerstats/calibrador.py` | Calibración haciendo clic sobre la imagen en Colab, con las líneas del campo dibujadas al momento. |
 | `soccerstats/pitch.py` | Medidas del campo (fútbol 11 y 7), puntos de referencia, homografía y dibujo del minimapa. |
 | `soccerstats/pipeline.py` | Une todo: procesa el vídeo y escribe el vídeo anotado y `tracks.csv`. |
 | `soccerstats/stats.py` | Distancias, velocidades, sprints, posesión y mapas de calor a partir de `tracks.csv`. |
@@ -33,7 +34,8 @@ vídeo ──► YOLO + tracker ──► equipo por color ──► homografía
 ```bash
 pip install -r requirements.txt
 
-# 1. Calibración (una vez por posición de cámara)
+# 1. Calibración (una vez por posición de cámara). En Colab es más cómodo con clics:
+#    from soccerstats.calibrador import calibrar_con_clics
 python scripts/calibrar.py puntos                       # nombres de puntos + imagen de referencia
 python scripts/calibrar.py frame datos/partido.mp4      # frame con cuadrícula para leer píxeles
 #    -> rellena config/calibracion.json (ver config/calibracion_ejemplo.json)

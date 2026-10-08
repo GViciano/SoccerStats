@@ -212,3 +212,25 @@ def test_stats(video, calib, tmp_path):
     assert pos[red_team] == pytest.approx(100.0)
     img = heatmap(df[df["clase"] == "jugador"], calib.pitch, scale=4)
     assert img.ndim == 3 and img.mean() > 0
+
+
+def test_click_calibrator(tmp_path):
+    from soccerstats.calibrador import ClickCalibrator, build_html
+
+    out = tmp_path / "calib.json"
+    cal = ClickCalibrator(out, (W, H))
+    refs = PITCH.keypoints()
+    names = ["esquina_sup_izq", "esquina_sup_der", "centro"]
+    for n in names:
+        u, v = m2img([refs[n]])[0]
+        state = cal.set_point(n, u, v)
+    assert state["error"] is None and state["lineas"] == []   # con 3 puntos aún no hay campo
+    u, v = m2img([refs["area_izq_sup"]])[0]
+    state = cal.set_point("area_izq_sup", u, v)
+    assert state["error"] < 0.1 and len(state["lineas"]) > 0
+    # Lo guardado en disco vale directamente para analizar.
+    assert Calibration.from_json(out).reprojection_error() < 0.1
+    # Borrar un punto y retomar desde el fichero.
+    cal.set_point("centro", None, None)
+    assert set(ClickCalibrator(out, (W, H)).points) == {"esquina_sup_izq", "esquina_sup_der", "area_izq_sup"}
+    assert "__IMG__" not in build_html(render(0), cal, "cb")
