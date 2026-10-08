@@ -100,7 +100,10 @@ class Calibration:
 
     def __post_init__(self) -> None:
         if len(self.image_points) < 4:
-            raise ValueError("Hacen falta al menos 4 puntos para calibrar el campo.")
+            raise ValueError(
+                f"Hacen falta al menos 4 puntos rellenados para calibrar el campo y hay "
+                f"{len(self.image_points)}. Sustituye los [0, 0] de la plantilla por las "
+                "coordenadas (x, y) en píxeles de cada punto en el frame con cuadrícula.")
         H, _ = cv2.findHomography(self.image_points.astype(np.float32),
                                   self.pitch_points.astype(np.float32), method=0)
         if H is None:
@@ -124,8 +127,8 @@ class Calibration:
         refs = pitch.keypoints()
         names, img, world = [], [], []
         for name, xy in data["puntos"].items():
-            if name.startswith("_") or xy is None:
-                continue
+            if name.startswith("_") or xy is None or list(xy) == [0, 0]:
+                continue  # [0, 0] = punto de la plantilla sin rellenar
             if name not in refs:
                 raise KeyError(f"Punto desconocido '{name}'. Válidos: {', '.join(refs)}")
             names.append(name)
