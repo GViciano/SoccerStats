@@ -1,0 +1,46 @@
+{
+  "_ayuda": "Coordenadas (x, y) en píxeles de puntos del campo visibles en el vídeo. Mínimo 4, mejor 6-8 repartidos por todo el campo. Lista de nombres válidos: python scripts/calibrar.py puntos",
+  "campo": {
+    "tipo": "futbol11",
+    "length": 105.0,
+    "width": 68.0
+  },
+  "puntos": {
+    "esquina_sup_izq": [
+      360,
+      240
+    ],
+    "esquina_sup_der": [
+      1560,
+      240
+    ],
+    "medio_sup": [
+      960,
+      240
+    ],
+    "medio_inf": [
+      960,
+      1000
+    ],
+    "centro": [
+      960,
+      511
+    ],
+    "area_izq_sup": [
+      508,
+      334
+    ],
+    "area_izq_inf": [
+      323,
+      761
+    ],
+    "area_der_sup": [
+      1412,
+      334
+    ],
+    "area_der_inf": [
+      1597,
+      761
+    ]
+  }
+}
